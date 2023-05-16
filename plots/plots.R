@@ -6,8 +6,8 @@ library(forcats)
 
 # original
 
-trn <- fread('data/adult_trn.csv.gz')
-val <- fread('data/adult_val.csv.gz')
+trn <- fread('2023-05/data/adult_trn.csv.gz')
+val <- fread('2023-05/data/adult_val.csv.gz')
 dt <- rbind(trn, val)
 dt[, `marital-status` := factor(`marital-status`)]
 
@@ -51,7 +51,7 @@ p6 <- ggplot(dt[, .N, by = .(`occupation`)][, share := N/sum(N)], aes(x = share,
 
 plot_grid(plotlist=list(p1, p2, p3, p4, p5, p6), 
           ncol=3, byrow=F)
-ggsave('plots/adult_univariate.png', width=12, height=6.5)
+ggsave('2023-05/plots/adult_univariate.png', width=12, height=6.5)
 
 ## bivariate
 
@@ -108,14 +108,14 @@ p3 <- ggplot(stats, aes(x=age, y=share)) + facet_grid(. ~ `relationship`) +
 
 top <- plot_grid(p1, p2, ncol=2)
 plot_grid(top, p3, nrow=2)
-ggsave('plots/adult_bivariate.png', width=10, height=6)
+ggsave('2023-05/plots/adult_bivariate.png', width=10, height=6)
 
 
 # benchmarks
 
-fidelity <- fread('fidelity.csv.gz')
-syn_labels <- data.table(synthesizer = c('trn', 'val', 'gretel', 'ctgan', 'copulagan', 'gaussian_copula', 'tvae', 'mostly', 'mostly_e1', 'mostly_e2', 'mostly_e4', 'mostly_e8', 'mostly_e16', 'synthpop', 'flip10', 'flip90'),
-                         syn_label = c('Training', 'Holdout', 'Gretel', 'CTGAN', 'CopulaGAN', 'Gaussian Copula', 'TVAE', 'MOSTLY', 'MOSTLY e1', 'MOSTLY e2', 'MOSTLY e4', 'MOSTLY e8', 'MOSTLY e16', 'synthpop', 'Flip 10%', 'Flip 90%'))
+fidelity <- fread('2023-05/fidelity.csv.gz')
+syn_labels <- data.table(synthesizer = c('trn', 'val', 'gretel', 'ctgan', 'copulagan', 'gaussian_copula', 'tvae', 'mostly', 'synthpop'),
+                         syn_label = c('Training', 'Holdout', 'Gretel', 'CTGAN', 'CopulaGAN', 'Gaussian Copula', 'TVAE', 'MOSTLY', 'synthpop'))
 fidelity <- merge(fidelity, syn_labels, all.x=TRUE)
 library(scales)
 fidelity[, label := paste0(syn_label, ' (', percent(tvd, accuracy=0.1), ')')]
@@ -138,7 +138,7 @@ split_colors <- c('#444444', '#AAAAAA', '#FFAE00',
 
 ## univariate
 
-fns <- file.path('data/',
+fns <- file.path('2023-05/data/',
                  c('adult_trn.csv.gz',
                    'adult_val.csv.gz',
                    'adult_copulagan.csv.gz',
@@ -201,7 +201,7 @@ p3 <- ggplot(stats, aes(x=`relationship`, y=share, fill=split)) +
   guides(fill = FALSE, color = FALSE)
 
 plot_grid(plotlist=list(p1, p2, p3), ncol=1)
-ggsave('plots/adult_bench_univariate.png', width=16, height=9)
+ggsave('2023-05/plots/adult_bench_univariate.png', width=16, height=9)
 
 #### bivariate
 stats <- adult[, .N, by = .(split, `relationship`, age = 5 * (age %/% 5))][, share := N/sum(N), by = .(`relationship`, split)]
@@ -220,7 +220,7 @@ ggplot(stats, aes(x=age, y=share, fill=split, color=split)) +
   scale_y_continuous(labels = scales::percent_format()) +
   coord_cartesian(xlim=c(15, 95), ylim=c(0, 0.45)) +
   guides(fill = FALSE, color = FALSE)
-ggsave('plots/adult_bench_bivariate.png', width=16, height=8)
+ggsave('2023-05/plots/adult_bench_bivariate.png', width=16, height=8)
 
 #### three-way
 stats <- adult[, .N, by = .(split, `relationship`, `income`, age = 5 * (age %/% 5))][, share := N/sum(N), by = .(`relationship`, `income`, split)]
@@ -239,4 +239,4 @@ ggplot(stats, aes(x=age, y=share, fill=split, color=split)) +
   scale_y_continuous(labels = scales::percent_format()) +
   coord_cartesian(xlim=c(15, 95), ylim=c(0, 0.45)) +
   guides(fill = FALSE, color = FALSE)
-ggsave('plots/adult_bench_threeway.png', width=18, height=12)
+ggsave('2023-05/plots/adult_bench_threeway.png', width=18, height=12)
